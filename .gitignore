@@ -1,0 +1,11 @@
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.key
+
+# Private evidence
+/private-evidence/
+
+# Unredacted local Sysmon evidence
+/docs/screenshots/01-sysmon-notepad-event.txt
