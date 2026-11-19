@@ -181,34 +181,33 @@ Screenshots and supporting evidence are maintained in [`docs/screenshots/`](docs
 
 ```text
 home-soc-lab/
-â”œâ”€â”€ .gitignore
-â”œâ”€â”€ configs/
-â”‚   â””â”€â”€ sysmon/
-â”‚       â””â”€â”€ sysmonconfig.xml
-â”œâ”€â”€ dashboards/
-â”‚   â””â”€â”€ dashboard_specs.md
-â”œâ”€â”€ detections/
-â”‚   â””â”€â”€ splunk-queries.spl
-â”œâ”€â”€ docs/
-â”‚   â”œâ”€â”€ architecture.md
-â”‚   â”œâ”€â”€ attack-simulation-guide.md
-â”‚   â”œâ”€â”€ deployment-guide.md
-â”‚   â”œâ”€â”€ lab-execution-log.md
-â”‚   â”œâ”€â”€ tuning-and-engineering.md
-â”‚   â””â”€â”€ screenshots/
-â”‚       â”œâ”€â”€ README.md
-â”‚       â”œâ”€â”€ 00-splunk-search-verification.png
-â”‚       â”œâ”€â”€ 01-sysmon-notepad-event-redacted.txt
-â”‚       â”œâ”€â”€ 02-sysmon-process-creation-splunk.png
-â”‚       â”œâ”€â”€ 03-powershell-process-creation-splunk.png
-â”‚       â”œâ”€â”€ 04-powershell-query-validation.png
-â”‚       â”œâ”€â”€ 05-network-destination-analysis.png
-â”‚       â”œâ”€â”€ 06-abuseipdb-enrichment-splunk.png
-â”‚       â””â”€â”€ 07-windows-soc-threat-intelligence-dashboard.png
-â”œâ”€â”€ lookups/
-â”‚   â””â”€â”€ abuseipdb-enrichment.csv
-â”œâ”€â”€ LICENSE
-â””â”€â”€ README.md
+|-- configs/
+|   `-- sysmon/
+|       `-- sysmonconfig.xml
+|-- dashboards/
+|   `-- dashboard_specs.md
+|-- detections/
+|   `-- splunk-queries.spl
+|-- docs/
+|   |-- architecture.md
+|   |-- attack-simulation-guide.md
+|   |-- deployment-guide.md
+|   |-- lab-execution-log.md
+|   |-- tuning-and-engineering.md
+|   `-- screenshots/
+|       |-- README.md
+|       |-- 00-splunk-search-verification.png
+|       |-- 01-sysmon-notepad-event-redacted.txt
+|       |-- 02-sysmon-process-creation-splunk.png
+|       |-- 03-powershell-process-creation-splunk.png
+|       |-- 04-powershell-query-validation.png
+|       |-- 05-network-destination-analysis.png
+|       |-- 06-abuseipdb-enrichment-splunk.png
+|       `-- 07-windows-soc-threat-intelligence-dashboard.png
+|-- lookups/
+|   `-- abuseipdb-enrichment.csv
+|-- LICENSE
+`-- README.md
 ```
 
 ## Current Scope and Future Work
