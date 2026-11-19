@@ -1,0 +1,112 @@
+# ==============================================================================
+# Verified Splunk SPL Investigations
+# Project: Windows SOC Lab
+# SIEM: Splunk Enterprise 9.3.14
+# Index: main
+# Data source: Sysmon Operational Event Log
+#
+# IMPORTANT:
+# These are tested investigation queries, not production alerts.
+# The earliest time windows are relative to the time of execution.
+# ==============================================================================
+
+
+# ==============================================================================
+# 1. VERIFIED - Sysmon Process Creation (Event ID 1)
+# Test activity: Manually launched Windows Notepad
+# Evidence: docs/screenshots/02-sysmon-process-creation-splunk.png
+# Validation: Process creation fields were extracted during testing; result counts depend on the search window.
+# ==============================================================================
+
+index=main earliest=-30m "Notepad.exe"
+| rex field=_raw "<EventID>(?<EventID>\d+)</EventID>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='ParentImage'>(?<ParentImage>[^<]+)</Data>"
+| rex field=_raw "<Data Name='ProcessId'>(?<ProcessId>\d+)</Data>"
+| search EventID=1
+| table _time EventID Image ParentImage ProcessId
+
+
+# ==============================================================================
+# 2. VERIFIED - Windows PowerShell Process Creation (Event ID 1)
+# Test activity: Manually launched Windows PowerShell 5.1
+# Evidence: docs/screenshots/04-powershell-query-validation.png
+# Validation: Returned one matching process creation event.
+# ==============================================================================
+
+index=main earliest=-15m "powershell.exe"
+| rex field=_raw "<EventID>(?<EventID>\d+)</EventID>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='ParentImage'>(?<ParentImage>[^<]+)</Data>"
+| rex field=_raw "<Data Name='CommandLine'>(?<CommandLine>[^<]+)</Data>"
+| search EventID=1 Image="*\\WindowsPowerShell\\v1.0\\powershell.exe"
+| table _time EventID Image ParentImage CommandLine
+| sort -_time
+
+
+
+
+# ==============================================================================
+# 3. VERIFIED - Sysmon Network Connection Field Extraction (Event ID 3)
+# Test activity: Harmless outbound HTTPS requests
+# Data source: Sysmon Operational Event Log
+# Validation: Extracted network fields from 545 Event ID 3 records
+# Time window: Rolling 15 minutes at the time of validation
+# ==============================================================================
+
+index=main earliest=-15m
+| rex field=_raw "<EventID>(?<EventID>\d+)</EventID>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='Protocol'>(?<Protocol>[^<]+)</Data>"
+| rex field=_raw "<Data Name='SourceIp'>(?<SourceIp>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationIp'>(?<DestinationIp>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationPort'>(?<DestinationPort>\d+)</Data>"
+| search EventID=3
+| table _time Image Protocol SourceIp DestinationIp DestinationPort
+| sort -_time
+
+
+# ==============================================================================
+# 4. VERIFIED - Network Destination Analysis (Event ID 3)
+# Technique: Group connections by process, destination IP, and destination port
+# Validation: Search completed with 198 public IPv4-filtered network events; displayed the top 20
+# process/destination combinations with frequency counts.
+# Evidence: docs/screenshots/05-network-destination-analysis.png
+# Time window: Rolling 15 minutes (11/19/2026, 5:01:39 PM - 5:16:39 PM)
+# ==============================================================================
+
+index=main earliest=-15m
+| rex field=_raw "<EventID>(?<EventID>\d+)</EventID>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationIp'>(?<DestinationIp>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationPort'>(?<DestinationPort>\d+)</Data>"
+| search EventID=3
+| where isnotnull(DestinationIp) AND NOT match(DestinationIp, ":" ) AND NOT cidrmatch("0.0.0.0/8", DestinationIp) AND NOT cidrmatch("10.0.0.0/8", DestinationIp) AND NOT cidrmatch("100.64.0.0/10", DestinationIp) AND NOT cidrmatch("127.0.0.0/8", DestinationIp) AND NOT cidrmatch("169.254.0.0/16", DestinationIp) AND NOT cidrmatch("172.16.0.0/12", DestinationIp) AND NOT cidrmatch("192.0.0.0/24", DestinationIp) AND NOT cidrmatch("192.0.2.0/24", DestinationIp) AND NOT cidrmatch("192.168.0.0/16", DestinationIp) AND NOT cidrmatch("198.18.0.0/15", DestinationIp) AND NOT cidrmatch("198.51.100.0/24", DestinationIp) AND NOT cidrmatch("203.0.113.0/24", DestinationIp) AND NOT cidrmatch("224.0.0.0/4", DestinationIp) AND NOT cidrmatch("240.0.0.0/4", DestinationIp)
+| eval ProcessName=replace(Image, "^.*\\\\", "")
+| stats count by ProcessName DestinationIp DestinationPort
+| sort -count
+| head 20
+
+
+# ==============================================================================
+# 5. VERIFIED - AbuseIPDB Threat Intelligence Enrichment (Event ID 3)
+# Data source: Sysmon Operational Event Log
+# Threat intelligence source: AbuseIPDB API v2
+# Lookup file: lookups/abuseipdb-enrichment.csv
+# Validation: 9 matching network events enriched with reputation information
+# Enriched IPs: 161.69.236.107 and 172.64.148.235
+# Evidence: docs/screenshots/06-abuseipdb-enrichment-splunk.png
+# Important: Reputation enrichment is not a malicious-activity determination.
+# Time window: Rolling 24 hours at the time of validation
+# ==============================================================================
+
+index=main earliest=-24h
+| rex field=_raw "<EventID>(?<EventID>\d+)</EventID>"
+| rex field=_raw "<Data Name='Image'>(?<Image>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationIp'>(?<DestinationIp>[^<]+)</Data>"
+| rex field=_raw "<Data Name='DestinationPort'>(?<DestinationPort>\d+)</Data>"
+| search EventID=3
+| lookup abuseipdb-enrichment.csv ipAddress AS DestinationIp OUTPUT abuseConfidenceScore countryCode isp domain totalReports lastReportedAt
+| where isnotnull(abuseConfidenceScore)
+| table _time Image DestinationIp DestinationPort abuseConfidenceScore totalReports isp domain
+| sort -_time

@@ -1,0 +1,39 @@
+
+
+TimeCreated : 11/15/2026 12:02:56 PM
+Id          : 1
+Message     : Process Create:
+              RuleName: -
+              UtcTime: 2026-11-15 06:32:56.209
+              ProcessGuid: <REDACTED>
+              ProcessId: 37808
+              Image: C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2609.
+              11.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+              FileVersion: -
+              Description: -
+              Product: -
+              Company: -
+              OriginalFileName: -
+              CommandLine: "C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_1
+              1.2609.11.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe  
+              /SESSION:<REDACTED>
+              CurrentDirectory: 
+              C:\Users\<USER>\<REDACTED_PATH>
+              User: LAB\analyst
+              LogonGuid: <REDACTED>
+              LogonId: <REDACTED>
+              TerminalSessionId: <REDACTED>
+              IntegrityLevel: High
+              Hashes: SHA256=9E72114B5CC0A587CEA8A8336F15B17FE321BD026FB96A12AA6AC4
+              AB6F52065C
+              ParentProcessGuid: <REDACTED>
+              ParentProcessId: 15628
+              ParentImage: C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11
+              .2609.11.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
+              ParentCommandLine: "C:\Windows\system32\notepad.exe" 
+              ParentUser: LAB\analyst
+
+
+
+
+
