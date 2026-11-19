@@ -180,7 +180,7 @@ Screenshots and supporting evidence are maintained in [`docs/screenshots/`](docs
 ## Repository Structure
 
 ```text
-home-soc-lab/
+.
 |-- configs/
 |   `-- sysmon/
 |       `-- sysmonconfig.xml
@@ -206,6 +206,8 @@ home-soc-lab/
 |       `-- 07-windows-soc-threat-intelligence-dashboard.png
 |-- lookups/
 |   `-- abuseipdb-enrichment.csv
+|-- .gitattributes
+|-- .gitignore
 |-- LICENSE
 `-- README.md
 ```
